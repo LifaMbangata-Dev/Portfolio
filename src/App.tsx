@@ -1,5 +1,6 @@
 ﻿import './App.css'
 import attendanceImage from './img/attendance.png'
+import llBurgerImage from './img/ll-burger.jpg'
 import resumePdf from './img/Lifa_Mbangata_Resume().pdf'
 import hackathonCertificate from './img/afrihack.png'
 import { useState } from 'react'
@@ -13,7 +14,24 @@ const skills = {
     Concepts: ['RESTful APIs', 'System Security', 'System Design', 'Cloud Storage', 'TDD (JUnit)'],
 }
 
-const projects = [
+type Project = {
+    number: string
+    title: string
+    description: string
+    tags: string[]
+    status: string
+    liveUrl: string
+    frontendUrl: string
+    backendUrl: string
+    highlights: string[]
+    image?: string
+    imageAlt?: string
+    reports?: string[]
+    rules?: string[]
+    detailNote?: string
+}
+
+const projects: Project[] = [
     {
         number: '01',
         title: 'Employee Attendance Management System',
@@ -24,8 +42,30 @@ const projects = [
         frontendUrl: 'https://github.com/LifaMbangata-Dev/attendance-analyzer-web',
         backendUrl: 'https://github.com/LifaMbangata-Dev/Attendance-Analyzer',
         highlights: ['Parses multi-section attendance CSV files', 'Tracks late arrivals, early departures and missing punches', 'Calculates short time, extra time and employee totals', 'Exports payroll-ready CSV reports', 'Backend tested with JUnit, Mockito and AssertJ'],
+        image: attendanceImage,
+        imageAlt: 'Employee Attendance Management System dashboard',
         reports: ['Late arrivals', 'Early departures', 'Missing punch records', 'Missing punches by employee', 'Incident summary by employee', 'Employee summary and dashboard statistics'],
         rules: ['Monday to Thursday: 8 hours 45 minutes with a 45-minute lunch deduction', 'Friday: 7 hours with a 30-minute lunch deduction', 'Late arrival after 08:00 and early departure before the expected time', 'Leave comments are excluded from short-time calculations', 'Weekends are ignored completely'],
+        detailNote: 'Backend testing: JUnit 5, Mockito and AssertJ.',
+    },
+    {
+        number: '02',
+        title: 'LL Burger',
+        description: 'A production-style full-stack burger ordering platform with real-time operations.',
+        tags: ['React', 'TypeScript', 'Vite', 'Java', 'Spring Boot', 'PostgreSQL', 'Redis', 'RabbitMQ', 'WebSocket/STOMP', 'JWT', 'Docker'],
+        status: 'LIVE',
+        liveUrl: 'https://llburgers-prompt-art-rho.vercel.app/',
+        frontendUrl: 'https://github.com/LifaMbangata-Dev/FoodMarket',
+        backendUrl: 'https://github.com/LifaMbangata-Dev/FoodMarket',
+        image: llBurgerImage,
+        imageAlt: 'LL Burgers ordering site homepage',
+        highlights: [
+            'Implemented role-based security for CUSTOMER, ADMIN and SUPER users',
+            'Built JWT access and refresh-token authentication with secure refresh handling',
+            'Enabled real-time order and business updates with WebSocket/STOMP',
+            'Integrated RabbitMQ for asynchronous processing and Redis for caching',
+            'Designed admin workflows for catalog, users, orders and audit logs',
+        ],
     },
 ]
 
@@ -61,10 +101,10 @@ function ContactForm() {
 }
 
 function App() {
-    const [selectedProject, setSelectedProject] = useState<typeof projects[number] | null>(null)
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null)
     const [certificateOpen, setCertificateOpen] = useState(false)
 
-    const openProject = (project: typeof projects[number]) => setSelectedProject(project)
+    const openProject = (project: Project) => setSelectedProject(project)
 
     return (
         <main>
@@ -140,8 +180,8 @@ function App() {
                                 <span>PROJECT // {project.number}</span>
                                 <small>{project.status}</small>
                             </div>
-                            {project.number === '01' && (
-                                <img className="project-image" src={attendanceImage} alt="Employee Attendance Management System dashboard" />
+                            {project.image && (
+                                <img className="project-image" src={project.image} alt={project.imageAlt ?? `${project.title} preview`} />
                             )}
                             <div className="project-card-copy">
                                 <h3>{project.title}</h3>
@@ -171,24 +211,30 @@ function App() {
                         <div className="project-modal-meta">PROJECT // {selectedProject.number} <span>{selectedProject.status}</span></div>
                         <h2 id="project-detail-title">{selectedProject.title}</h2>
                         <p className="project-modal-intro">{selectedProject.description}</p>
-                        <img className="project-modal-image" src={attendanceImage} alt="Full Employee Attendance Management System dashboard" />
+                        {selectedProject.image && (
+                            <img className="project-modal-image" src={selectedProject.image} alt={selectedProject.imageAlt ?? `${selectedProject.title} preview`} />
+                        )}
                         <div className="project-detail-grid">
                             <div>
                                 <h3>What it does</h3>
                                 <ul>{selectedProject.highlights?.map((item) => <li key={item}>{item}</li>)}</ul>
                             </div>
-                            <div>
-                                <h3>Reports</h3>
-                                <ul>{selectedProject.reports?.map((item) => <li key={item}>{item}</li>)}</ul>
-                            </div>
-                            <div>
-                                <h3>Business rules</h3>
-                                <ul>{selectedProject.rules?.map((item) => <li key={item}>{item}</li>)}</ul>
-                            </div>
+                            {selectedProject.reports && (
+                                <div>
+                                    <h3>Reports</h3>
+                                    <ul>{selectedProject.reports.map((item) => <li key={item}>{item}</li>)}</ul>
+                                </div>
+                            )}
+                            {selectedProject.rules && (
+                                <div>
+                                    <h3>Business rules</h3>
+                                    <ul>{selectedProject.rules.map((item) => <li key={item}>{item}</li>)}</ul>
+                                </div>
+                            )}
                             <div>
                                 <h3>Technology</h3>
                                 <div className="project-tags">{selectedProject.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-                                <p className="project-testing">Backend testing: JUnit 5, Mockito and AssertJ.</p>
+                                {selectedProject.detailNote && <p className="project-testing">{selectedProject.detailNote}</p>}
                             </div>
                         </div>
                         <div className="project-modal-links">
